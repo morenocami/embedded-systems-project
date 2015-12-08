@@ -179,17 +179,9 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             if(characteristic.getUuid().equals(SERIAL)) {
-                switch(characteristic.getValue()[0]){
-                    case 48:
-                        runOnUiThread(update);
-                        break;
-                    default:
-                        scan.add(characteristic.getValue());
-//                        dur = byteArrayToInt(characteristic.getValue());
-//                        runOnUiThread(update);
-//                        toggle++;
-//                        if(toggle==4){toggle=1;}
-                }
+                if(characteristic.getValue()[characteristic.getValue().length-1]==-2)
+                    runOnUiThread(update);
+                scan.add(characteristic.getValue());
             }
         }
     };
@@ -222,9 +214,10 @@ public class DeviceControlActivity extends Activity {
     private void generateBMP(){
         final int width = 500, height = 500;
         int x = 250, y = 400, ind1=0, ind2=0;
-        int distance, sum = 0, count = 0, zeroes = 0;
+        int distance, sum = 0, count = 0, degree=1;
         bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         List<Integer> distances = new ArrayList<>();
+
 
         //fill distances array with the average distance reading per degree
         while(true) {
@@ -235,34 +228,27 @@ public class DeviceControlActivity extends Activity {
                 distance = scan.get(ind1)[ind2++];
             }
 
-            if(distance==0) { zeroes++; }
-            else if (distance == -2)
+            if(distance==0) {}
+            else if (distance == -2){
+                distances.add(-2);
                 break;
-            else if(distance == -1){
-                if(zeroes>=10){
-                    distances.add(0);
-                    sum=0;
-                    count=0;
-                    zeroes = 0;
-                }
-                else{
-                    distances.add(sum/count);
-                    sum=0;
-                    count=0;
-                    zeroes = 0;
-                }
             }
-            else{
-                sum+=distance;
-                count++;
+            else if(distance == -1)
+                distances.add(-1);
+            else {
+                if (distance < 0) {distance += 256;}
+                distances.add(distance);
             }
         }
 
-        int degree=1;
-        for(Integer i : distances)
-            bmp.setPixel(x - (int) (i * Math.cos((degree * Math.PI) / 180)),
-                    y - Math.abs((int) (i * Math.sin((degree++ * Math.PI) / 180))),
+        for(Integer i : distances) {
+            if(i==-2) { break; }
+            else if (i==-1) { degree++; }
+            else
+                bmp.setPixel(x - (int) (i * Math.cos((degree * Math.PI) / 180)),
+                    y - Math.abs((int) (i * Math.sin((degree * Math.PI) / 180))),
                     Color.WHITE);
+        }
 
         for(int j=400;j<500;j++)
             bmp.setPixel(250, j, Color.WHITE);

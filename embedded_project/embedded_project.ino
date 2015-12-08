@@ -33,9 +33,9 @@ void loop() {
       //sweep right
       for(pos = 1; pos < 180; pos += 1) {
         servo.write(pos);
-        delay(1);
+        delayMicroseconds(250);
 
-        for(r=0; r<15; r++){
+        for(r=0; r<50; r++){
           digitalWrite(TRIG, LOW);
           delayMicroseconds(2);
           digitalWrite(TRIG, HIGH);
@@ -43,15 +43,15 @@ void loop() {
           digitalWrite(TRIG, LOW);
           duration = pulseIn(echoPin, HIGH, 5000);
           
-          distance = (duration/2) / 20;
+          distance = (duration/2) / 10;
           Serial.write(distance);
-          delay(1);
+          delayMicroseconds(250);
         }
         Serial.write(-1);
         delay(1);
       }
       Serial.write(-2);
-      delay(2);
+      delay(100);
     }
   }
 }
