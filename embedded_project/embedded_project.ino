@@ -47,17 +47,13 @@ void loop() {
         Serial.write(distance);
         delayMicroseconds(250);
 
-        for(r=0; r<50; r++){
-          digitalWrite(TRIG, LOW);
-          delayMicroseconds(2);
-          digitalWrite(TRIG, HIGH);
-          delayMicroseconds(8);
-          digitalWrite(TRIG, LOW);
-          duration = pulseIn(echoPin, HIGH, 5000);
-          
-          distance = (duration/2) / 10;
-          Serial.write(distance);
-          delayMicroseconds(250);
+        if(Serial.available()>0){
+          if(Serial.read()==0){
+            delay(10);
+            Serial.write(-1);
+            delay(10);
+            break;
+          }
         }
       }
     }
