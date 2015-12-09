@@ -50,8 +50,11 @@ void loop() {
         if(Serial.available()>0){
           if(Serial.read()==0){
             delay(10);
-            Serial.write(-1);
-            delay(10);
+            int q =0;
+            for(q; q<10; q++){
+              Serial.write(-1);
+              delay(10);
+            }
             break;
           }
         }

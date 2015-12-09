@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Matrix;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -76,8 +77,7 @@ public class DeviceControlActivity extends Activity {
     private float curX, curY, mx=0, my=0;
     private ImageView image;
     private Bitmap bmp;
-    private TextView scanner, map;
-    private List<byte[]> scan = new ArrayList<>();
+    private TextView scanner, map, stopper;    private List<byte[]> scan = new ArrayList<>();
 
     private long start, stop;
     private boolean started=false;
@@ -88,44 +88,14 @@ public class DeviceControlActivity extends Activity {
     private Runnable update = new Runnable() {
         @Override
         public void run() {
-            scanner.setText("Re-scan");
-            scanner.setEnabled(true);
+            map.setEnabled(true);
+            scanner.setText("Scan");
             updateFuture.cancel(true);
         }
     };
     // submit task to threadpool:
     private Future updateFuture = threadPoolExecutor.submit(update);
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
-    ////////////////////////////////
 
-    //
-    //
     // GATT CALLBACK!
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
@@ -184,21 +154,30 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             if(characteristic.getUuid().equals(SERIAL)) {
-                while (!started){
-                    start =  System.currentTimeMillis();
+                if (!started){
                     started=true;
                 }
                 if(characteristic.getValue()[0]==-1) {
-                    runOnUiThread(update);
-                }
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            map.setEnabled(true);
+                            scanner.setText("Scan");
+                            updateFuture.cancel(true);
+                        }
+                    });                }
                 scan.add(characteristic.getValue());
             }
         }
     };
 
     public void scan(View v){
+        scan.clear();
+
         scanner.setEnabled(false);
-        findViewById(R.id.stop).setEnabled(true);
+        map.setEnabled(false);
+        stopper.setEnabled(true);
+
         serial.setValue(new byte[]{(int) 1});
         mGatt.writeCharacteristic(serial);
     }
@@ -206,12 +185,11 @@ public class DeviceControlActivity extends Activity {
     public void map(View v) {
         switch (v.getId()) {
             case R.id.stop:
-                stop = System.currentTimeMillis();
+                stopper.setEnabled(false);
+                Toast.makeText(this, "One moment please...", Toast.LENGTH_SHORT).show();
 
                 scanner.setEnabled(true);
-                scanner.setText("Re-Scan");
-                map.setText("Map");
-                map.setEnabled(true);
+                scanner.setText("Re-Scan?");
 
                 serial.setValue(new byte[]{(int) 0});
                 mGatt.writeCharacteristic(serial);
@@ -219,18 +197,14 @@ public class DeviceControlActivity extends Activity {
             case R.id.map:
                 map.setEnabled(false);
                 generateBMP();
+                scanner.setText("Scan");
                 started = false;
-                scan.clear();
         }
     }
 
     private void generateBMP(){
-        final double duration = (stop-start)*1000;
-        final int width = 500, height = (int)((duration/CAR_SPEED)/3000);
-        int x = 250, y = 50, ind1=0, ind2=0, distance;
-        bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+        int x = 250, y = 0, ind1=0, ind2=0, distance;
         List<Integer> distances = new ArrayList<>();
-
 
         while (true) {
             try { distance = scan.get(ind1)[ind2++]; }
@@ -261,6 +235,9 @@ public class DeviceControlActivity extends Activity {
             }
         }
 
+        final int width = 500, height = ((distances.size()/5) +1);
+        bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
+
         int count = 0;
         boolean even=true;
         for(Integer i : distances) {
@@ -269,7 +246,7 @@ public class DeviceControlActivity extends Activity {
                 break;
             }
             else {
-                if(count==10){ y++; count=0; }
+                if(count==5){ y++; count=0; }
                 if(even) {
                     bmp.setPixel(x + i, y, Color.WHITE);
                     even=false;
@@ -284,6 +261,10 @@ public class DeviceControlActivity extends Activity {
 
         for(int j=0;j<height;j++)
             bmp.setPixel(250, j, Color.WHITE);
+
+        final Matrix matrix = new Matrix();
+        matrix.postRotate(180, width, height);
+        bmp = Bitmap.createBitmap(bmp, 0,0, width, height, matrix, true);
 
         Drawable d = new BitmapDrawable(getResources(), bmp);
         image.scrollTo(0, 0);
@@ -419,6 +400,7 @@ public class DeviceControlActivity extends Activity {
 
         scanner = (TextView)findViewById(R.id.scanner);
         map = (TextView)findViewById(R.id.map);
+        stopper = (TextView)findViewById(R.id.stop);
 
 //bitmap setup
         image = (ImageView)findViewById(R.id.imageView);
