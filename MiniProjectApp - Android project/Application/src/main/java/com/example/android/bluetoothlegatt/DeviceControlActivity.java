@@ -33,6 +33,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -77,6 +78,10 @@ public class DeviceControlActivity extends Activity {
     private Bitmap bmp;
     private TextView scanner, map;
     private List<byte[]> scan = new ArrayList<>();
+
+    private long start, stop;
+    private boolean started=false;
+    private final static double CAR_SPEED = 4; //meters per second
 
 
     private ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
@@ -179,78 +184,105 @@ public class DeviceControlActivity extends Activity {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             if(characteristic.getUuid().equals(SERIAL)) {
-                if(characteristic.getValue()[characteristic.getValue().length-1]==-2)
+                while (!started){
+                    start =  System.currentTimeMillis();
+                    started=true;
+                }
+                if(characteristic.getValue()[0]==-1) {
                     runOnUiThread(update);
+                }
                 scan.add(characteristic.getValue());
             }
         }
     };
 
-
     public void scan(View v){
-        scanner.setText("Scanning...");
         scanner.setEnabled(false);
-        map.setEnabled(true);
-        map.setText("Map");
+        findViewById(R.id.stop).setEnabled(true);
         serial.setValue(new byte[]{(int) 1});
         mGatt.writeCharacteristic(serial);
     }
 
     public void map(View v) {
-        if (scan.size() == 0){
-            Toast.makeText(this, "Scan failed... try reconnecting", Toast.LENGTH_SHORT).show();
-            scan.clear();
-        }
-        else{
-            generateBMP();
-            scan.clear();
-            scanner.setEnabled(true);
-            scanner.setText("Scan");
-            map.setText("Mapping...");
-            map.setEnabled(false);
+        switch (v.getId()) {
+            case R.id.stop:
+                stop = System.currentTimeMillis();
+
+                scanner.setEnabled(true);
+                scanner.setText("Re-Scan");
+                map.setText("Map");
+                map.setEnabled(true);
+
+                serial.setValue(new byte[]{(int) 0});
+                mGatt.writeCharacteristic(serial);
+                break;
+            case R.id.map:
+                map.setEnabled(false);
+                generateBMP();
+                started = false;
+                scan.clear();
         }
     }
 
     private void generateBMP(){
-        final int width = 500, height = 500;
-        int x = 250, y = 400, ind1=0, ind2=0;
-        int distance, sum = 0, count = 0, degree=1;
+        final double duration = (stop-start)*1000;
+        final int width = 500, height = (int)((duration/CAR_SPEED)/3000);
+        int x = 250, y = 50, ind1=0, ind2=0, distance;
         bmp = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565);
         List<Integer> distances = new ArrayList<>();
 
 
-        //fill distances array with the average distance reading per degree
-        while(true) {
+        while (true) {
             try { distance = scan.get(ind1)[ind2++]; }
-            catch(Exception e){
+            catch (Exception e) {
                 ind1+=1;
                 ind2=0;
                 distance = scan.get(ind1)[ind2++];
+//                try{distance = scan.get(ind1)[ind2]; }
+//                catch(IndexOutOfBoundsException el){
+//                    for(int q=0;q<10000;q++){final int z=1;}
+//                    distance = scan.get(ind1)[ind2];
+//                }
+//                ind2++;
             }
 
-            if(distance==0) {}
-            else if (distance == -2){
+            if (distance == -2) {
                 distances.add(-2);
                 break;
             }
-            else if(distance == -1)
+            else if (distance == -1) {
                 distances.add(-1);
+                break; //temporary for single-direction
+            }
             else {
+                //consider filtering out some values per group of 100
                 if (distance < 0) {distance += 256;}
                 distances.add(distance);
             }
         }
 
+        int count = 0;
+        boolean even=true;
         for(Integer i : distances) {
             if(i==-2) { break; }
-            else if (i==-1) { degree++; }
-            else
-                bmp.setPixel(x - (int) (i * Math.cos((degree * Math.PI) / 180)),
-                    y - Math.abs((int) (i * Math.sin((degree * Math.PI) / 180))),
-                    Color.WHITE);
+            else if (i==-1) {
+                break;
+            }
+            else {
+                if(count==10){ y++; count=0; }
+                if(even) {
+                    bmp.setPixel(x + i, y, Color.WHITE);
+                    even=false;
+                }
+                else {
+                    bmp.setPixel(x - i, y, Color.WHITE);
+                    even=true;
+                }
+                count++;
+            }
         }
 
-        for(int j=400;j<500;j++)
+        for(int j=0;j<height;j++)
             bmp.setPixel(250, j, Color.WHITE);
 
         Drawable d = new BitmapDrawable(getResources(), bmp);

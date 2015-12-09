@@ -1,23 +1,18 @@
-#include <Servo.h> 
+#define TRIG1 2
+#define echoPin1 3 
+#define TRIG2 A3
+#define echoPin2 A2
 
-#define TRIG 6
-#define echoPin 7
-
-Servo servo;
-unsigned int pos = 0,
-            r = 0;
-
-long duration, distance;
+int duration, distance;
 
 void setup() {
-  pinMode(TRIG, OUTPUT);
-  pinMode(echoPin, INPUT);
+  pinMode(TRIG1, OUTPUT);
+  pinMode(echoPin1, INPUT);
+  pinMode(TRIG2, OUTPUT);
+  pinMode(echoPin2, INPUT);
   
-  digitalWrite(TRIG,LOW);
-  
-  servo.attach(12);
-  servo.write(90);
-  delay(1000);
+  digitalWrite(TRIG1,LOW);
+  digitalWrite(TRIG2,LOW);
   
   Serial.begin (115200);
 }
@@ -28,30 +23,39 @@ void loop() {
     byte x = Serial.read();
     
     if(x==1){
-      servo.write(0);
-      delay(1000);
-      //sweep right
-      for(pos = 1; pos < 180; pos += 1) {
-        servo.write(pos);
+      while(x!=0){
+        digitalWrite(TRIG1, LOW);
+        delayMicroseconds(2);
+        digitalWrite(TRIG1, HIGH);
+        delayMicroseconds(8);
+        digitalWrite(TRIG1, LOW);
+        duration = pulseIn(echoPin1, HIGH, 5000);
+        
+        distance = (duration/2) / 10;
+        Serial.write(distance); 
+        delayMicroseconds(250);
+        
+        digitalWrite(TRIG2, LOW);
+        delayMicroseconds(2);
+        digitalWrite(TRIG2, HIGH);
+        delayMicroseconds(8);
+        digitalWrite(TRIG2, LOW);
+        duration = pulseIn(echoPin2, HIGH, 5000);
+        
+        distance = (duration/2) / 10;
+        
+        Serial.write(distance);
         delayMicroseconds(250);
 
-        for(r=0; r<50; r++){
-          digitalWrite(TRIG, LOW);
-          delayMicroseconds(2);
-          digitalWrite(TRIG, HIGH);
-          delayMicroseconds(8);
-          digitalWrite(TRIG, LOW);
-          duration = pulseIn(echoPin, HIGH, 5000);
-          
-          distance = (duration/2) / 10;
-          Serial.write(distance);
-          delayMicroseconds(250);
+        if(Serial.available()>0){
+          if(Serial.read()==0){
+            delay(10);
+            Serial.write(-1);
+            delay(10);
+            break;
+          }
         }
-        Serial.write(-1);
-        delay(1);
       }
-      Serial.write(-2);
-      delay(100);
     }
   }
 }
