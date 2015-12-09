@@ -2,18 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\libs\internal_impl-23.0.0.jar"
+        jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\classes.jar"
         jumboMode="false"
         revision="23.0.0"
-        sha1="5d4bccb885c8a89d066ecb6c4addb553a99a79a2">
-        <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-2e065040d247fa5a6b548913e3b4115d2f702e14.jar" />
-    </item>
-    <item
-        jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\cardview-v7\23.0.0\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.0"
-        sha1="1ccbc26be2c465c622a48310e8092241b01abe80">
-        <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\classes-4845bde2bc3bfacb679b9b4584bf0398838c01f9.jar" />
+        sha1="bb0ac3f3ee2d71854501cc28e52cc84a20209b41">
+        <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\classes-a27c0dabcee868a43b93a9d504625d6081d41a79.jar" />
     </item>
     <item
         jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\libs\internal_impl-23.0.0.jar"
@@ -21,6 +14,13 @@
         revision="23.0.0"
         sha1="8bd336eeae661e8311330284897ee07f8ebaa297">
         <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-14da38c02eb919f01e61e6cffe06f2c575e2ca36.jar" />
+    </item>
+    <item
+        jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\libs\internal_impl-23.0.0.jar"
+        jumboMode="false"
+        revision="23.0.0"
+        sha1="5d4bccb885c8a89d066ecb6c4addb553a99a79a2">
+        <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\internal_impl-23.0.0-2e065040d247fa5a6b548913e3b4115d2f702e14.jar" />
     </item>
     <item
         jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.0\jars\classes.jar"
@@ -37,11 +37,11 @@
         <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\support-annotations-23.0.0-1438ca4a42fdae2773ee7547ae9f9bd2c36c6d3f.jar" />
     </item>
     <item
-        jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\support-v13\23.0.0\jars\classes.jar"
+        jar="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\exploded-aar\com.android.support\cardview-v7\23.0.0\jars\classes.jar"
         jumboMode="false"
         revision="23.0.0"
-        sha1="bb0ac3f3ee2d71854501cc28e52cc84a20209b41">
-        <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\classes-a27c0dabcee868a43b93a9d504625d6081d41a79.jar" />
+        sha1="1ccbc26be2c465c622a48310e8092241b01abe80">
+        <dex dex="C:\Users\Camilo\Google Drive\GitHub\Embedded-Project\MiniProjectApp - Android project\Application\build\intermediates\pre-dexed\debug\classes-4845bde2bc3bfacb679b9b4584bf0398838c01f9.jar" />
     </item>
 
 </items>

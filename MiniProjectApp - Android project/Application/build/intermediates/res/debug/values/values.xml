@@ -21,7 +21,7 @@
     <dimen name="vertical_page_margin">@dimen/margin_medium</dimen>
     <!-- From: file:/C:/Users/Camilo/Google%20Drive/GitHub/Embedded-Project/MiniProjectApp%20-%20Android%20project/Application/src/main/res/values/base-strings.xml -->
     <eat-comment/>
-    <string name="app_name">BluetoothLeGatt</string>
+    <string name="app_name">Embedded Systems Project</string>
     <!-- From: file:/C:/Users/Camilo/Google%20Drive/GitHub/Embedded-Project/MiniProjectApp%20-%20Android%20project/Application/src/main/res/values/strings.xml -->
     <eat-comment/>
     <string name="ble_not_supported">BLE is not supported</string>
